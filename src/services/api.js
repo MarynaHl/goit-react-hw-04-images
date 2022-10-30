@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
 export default function fetchImagesWithQuery(searchQuery, page) {
@@ -6,3 +7,8 @@ export default function fetchImagesWithQuery(searchQuery, page) {
   );
   return response;
 }
+
+fetchImagesWithQuery.propTypes = {
+  searchQuery: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+};
