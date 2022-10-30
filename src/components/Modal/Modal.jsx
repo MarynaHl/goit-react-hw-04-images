@@ -1,26 +1,19 @@
 import { useEffect } from 'react';
 import s from './Modal.module.css';
+import PropTypes from 'prop-types';
 
-export default function Modal({ onClose, srcLI }) {
-  const handleKeyDown = evt => {
-    if (evt.code === 'Escape') {
-      onClose();
-    }
-  };
-
-  // add/remove EventListener
+export default function Modal({ toggleModal, largeImage }) {
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
+    const handleKeyDown = e => e.code === 'Escape' && toggleModal();
 
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  });
+  }, [toggleModal]);
 
-  const overlayClickHandler = evt => {
-    if (evt.target === evt.currentTarget) {
-      onClose();
-    }
+  const handleBackdropClick = e => {
+    e.target === e.currentTarget && toggleModal();
   };
 
   return (
@@ -31,3 +24,8 @@ export default function Modal({ onClose, srcLI }) {
     </div>
   );
 }
+
+Modal.propTypes = {
+  toggleModal: PropTypes.func.isRequired,
+  largeImage: PropTypes.string.isRequired,
+};

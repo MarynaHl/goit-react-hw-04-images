@@ -12,29 +12,35 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function App() {
   const [searchData, setSearchData] = useState('');
   const [images, setImages] = useState([]);
+  const [page, setPage] = useState(0);
   const [largeImage, setLargeImage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (searchQuery === '') {
+    if (!page) {
       return;
     }
-    setStatus('pending');
-    fetchImages(searchQuery, currentPage);
-  }, [searchQuery, currentPage]);
 
-  const formSubmitHandler = searchQuery => {
-    setImgArr([]);
-    setCurrentPage(1);
-    setSearchQuery(searchQuery);
-  };
-
-  const loadMoreHandler = () => {
-    setCurrentPage(prevState => prevState + 1);
-  };
-
+    try {
+      setIsLoading(true);
+      const response = fetchImagesWithQuery(searchData, page);
+      response.then(data => {
+        data.data.hits.length === 0
+          ? toast.error('Nothing found')
+          : data.data.hits.forEach(({ id, webformatURL, largeImageURL }) => {
+              !images.some(image => image.id === id) &&
+                setImages(i => [...i, { id, webformatURL, largeImageURL }]);
+            });
+        setIsLoading(false);
+      });
+    } catch (error) {
+      setError(error);
+      setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchData]);
 
   const onSubmit = newSearchData => {
